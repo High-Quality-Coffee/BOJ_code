@@ -5,4 +5,5 @@ function solution(s1, s2) {
         answer=answer.length
     
     return answer;
+    
 }
