@@ -1,6 +1,7 @@
 //서로 다른 => 중복이 되지 않는,,
 //set or stream으로 접근하기 가능
 import java.util.*;
+
 class Solution {
     public int[] solution(int[] arr, int k) {
         
@@ -19,4 +20,6 @@ class Solution {
         return newList.stream().mapToInt(i->i).toArray();        
 
     }
+    
+
 }
