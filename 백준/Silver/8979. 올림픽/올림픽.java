@@ -55,6 +55,8 @@ class Main {
         Collections.sort(list);
 
         rank[0] = 1;
+        int sameRank = 1;
+        int ranks = 1;
 
         for(int i=1;i<n;i++){
 
@@ -62,8 +64,11 @@ class Main {
             list.get(i).silver == list.get(i-1).silver &&
             list.get(i).bronze == list.get(i-1).bronze){
                 rank[i] = rank[i-1];
+                sameRank++;
             }else{
-                rank[i] = rank[i-1]+1;
+                ranks += sameRank;
+                rank[i] = ranks;
+                sameRank = 1;
             }
             
         }
