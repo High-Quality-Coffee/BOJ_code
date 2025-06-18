@@ -2,105 +2,106 @@ import java.io.*;
 import java.util.*;
 
 class Main {
-    static class Node implements Comparable<Node> {
-        int index, weight;
+    
 
-        public Node(int index, int weight) {
+    public static class Node implements Comparable<Node>{
+        private int index;
+        private int weight;
+
+        public Node(int index, int weight){
             this.index = index;
             this.weight = weight;
         }
 
-        // 가중치 우선, 가중치가 같으면 정점 순으로 정렬
+        public int getIndex(){
+            return this.index;
+        }
+
+        public int getWeight(){
+            return this.weight;
+        }
+
         @Override
-        public int compareTo(Node other) {
-            if (this.weight != other.weight) {
-                return Integer.compare(this.weight, other.weight); // 가중치 오름차순
+        public int compareTo(Node node){
+            if (this.weight != node.weight) {
+                return Integer.compare(this.weight, node.weight); // 가중치 오름차순
             }
-            return Integer.compare(this.index, other.index); // 정점 오름차순
+            return Integer.compare(this.index, node.index); // 가중치 같으면 정점 오름차순
         }
     }
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int n = Integer.parseInt(br.readLine()); // 도시의 개수
-        int m = Integer.parseInt(br.readLine()); // 버스의 개수
 
-        // 인접 리스트 초기화
-        ArrayList<Node>[] list = new ArrayList[n + 1];
-        for (int i = 0; i <= n; i++) {
-            list[i] = new ArrayList<>();
+        int n = Integer.parseInt(br.readLine()); //도시의 개수
+        int m = Integer.parseInt(br.readLine()); //버스의 개수
+
+        ArrayList<ArrayList<Node>> list = new ArrayList<>(); //출발, 도착, 비용을 저장할 그래프
+        ArrayList<Integer> answer = new ArrayList<>(); //최종 경로를 저장할 공간
+        int[] d = new int[n+1];; //최단경로 비용을 저장할 1차원 배열
+        int INF = Integer.MAX_VALUE; //초기 d에 저장할 무한대 값 (정수에서 최대값 2,14*,***)
+        PriorityQueue<Node> q = new PriorityQueue<>((a, b) -> Integer.compare(a.weight, b.weight)); //우선순위 큐 기반 다익스트라 알고리즘 구현
+        int[] prev = new int[n+1];; //이전 경로들을 추적하기 위한 1차원 배열
+    
+        //그래프 초기화
+        for(int i=0;i<=n;i++){
+            list.add(new ArrayList<>());
         }
 
-        // 입력 처리 (중복 간선 최적화)
-        Map<String, Integer> edgeMap = new HashMap<>();
-        for (int i = 0; i < m; i++) {
-            String[] input = br.readLine().split(" ");
-            int a = Integer.parseInt(input[0]);
-            int b = Integer.parseInt(input[1]);
-            int c = Integer.parseInt(input[2]);
-            String key = a + "," + b;
-            // 최소 비용만 저장
-            edgeMap.put(key, Math.min(edgeMap.getOrDefault(key, Integer.MAX_VALUE), c));
+        for(int i =0;i<m;i++){
+            StringTokenizer st = new StringTokenizer(br.readLine());
+
+            int a = Integer.parseInt(st.nextToken()); //출발도시
+            int b = Integer.parseInt(st.nextToken()); //도착도시
+            int c = Integer.parseInt(st.nextToken()); //cost
+
+            list.get(a).add(new Node(b, c));
         }
+        
+        StringTokenizer st1 = new StringTokenizer(br.readLine());
+        int start = Integer.parseInt(st1.nextToken()); //최초 출발지
+        int end = Integer.parseInt(st1.nextToken()); //최종 도착지
 
-        // 인접 리스트에 간선 추가 및 정렬
-        for (Map.Entry<String, Integer> entry : edgeMap.entrySet()) {
-            String[] ab = entry.getKey().split(",");
-            int a = Integer.parseInt(ab[0]);
-            int b = Integer.parseInt(ab[1]);
-            int c = entry.getValue();
-            list[a].add(new Node(b, c));
-        }
-
-        // 각 인접 리스트를 가중치 우선, 정점 순으로 정렬
-        for (int i = 1; i <= n; i++) {
-            Collections.sort(list[i]);
-        }
-
-        String[] input = br.readLine().split(" ");
-        int start = Integer.parseInt(input[0]);
-        int end = Integer.parseInt(input[1]);
-
-        // 다익스트라 알고리즘
-        int[] d = new int[n + 1];
-        int[] prev = new int[n + 1];
-        Arrays.fill(d, Integer.MAX_VALUE);
+        Arrays.fill(d, INF);
         Arrays.fill(prev, -1);
-        d[start] = 0;
 
-        PriorityQueue<Node> q = new PriorityQueue<>((a, b) -> Integer.compare(a.weight, b.weight));
+        d[start] = 0;
         q.offer(new Node(start, 0));
 
-        while (!q.isEmpty()) {
+        while(!q.isEmpty()){
             Node node = q.poll();
-            int idx = node.index;
-            int value = node.weight;
+            int idx = node.getIndex();
+            int value = node.getWeight();
 
-            if (d[idx] < value) continue;
+            if(d[idx] < value) continue;
 
-            for (Node next : list[idx]) {
-                int cost = d[idx] + next.weight;
-                if (cost < d[next.index]) {
-                    d[next.index] = cost;
-                    prev[next.index] = idx;
-                    q.offer(new Node(next.index, cost));
+            for(int i=0;i<list.get(idx).size();i++){
+                int cost = d[idx] + list.get(idx).get(i).getWeight();
+
+                if(d[list.get(idx).get(i).getIndex()] > cost){
+                    d[list.get(idx).get(i).getIndex()] = cost;
+                    q.offer(new Node(list.get(idx).get(i).getIndex(), cost));
+                    prev[list.get(idx).get(i).getIndex()] = idx;
                 }
             }
         }
 
-        // 경로 역추적
-        List<Integer> answer = new ArrayList<>();
         int current = end;
-        while (current != -1) {
-            answer.add(current);
+        answer.add(current);
+
+        while(start!=current){
             current = prev[current];
+            answer.add(current);
         }
 
-        // 출력
+        Collections.reverse(answer);
+
         System.out.println(d[end]);
         System.out.println(answer.size());
-        for (int i = answer.size() - 1; i >= 0; i--) {
+
+        for(int i=0;i<answer.size();i++){
             System.out.print(answer.get(i) + " ");
         }
     }
 }
+
