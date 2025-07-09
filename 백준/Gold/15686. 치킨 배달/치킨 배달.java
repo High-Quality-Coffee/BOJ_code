@@ -2,7 +2,6 @@ import java.io.*;
 import java.util.*;
 
 class Main {
-    public static int[][] list;
     public static ArrayList<Node> home = new ArrayList<>();
     public static ArrayList<Node> chicken_store = new ArrayList<>();
     public static ArrayList<Node> target_chicken_store = new ArrayList<>();
@@ -36,14 +35,12 @@ class Main {
         int n = Integer.parseInt(st.nextToken());
         int m = Integer.parseInt(st.nextToken());
 
-        list = new int[n+1][n+1];
         check = new boolean[m];
 
         for(int i=1;i<=n;i++){
             st = new StringTokenizer(br.readLine());
             for(int j=1;j<=n;j++){
                 int value = Integer.parseInt(st.nextToken());
-                list[i][j] = value;
                 if(value == 1) home.add(new Node(i,j));
                 else if(value == 2) chicken_store.add(new Node(i,j));
                 else continue;
