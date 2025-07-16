@@ -10,13 +10,16 @@ class Main {
         String str = br.readLine();
 
         int r = 31;
-        int m = 1234567891;
-        int sum = 0;
+        long m = 1234567891;
+        long sum = 0;
+        long pow = 1;
+
 
         for(int i=0;i<l;i++){
-            sum += (str.charAt(i)-'a'+1) * Math.pow(r,i);
+            sum = (sum + (str.charAt(i)-'a'+1) * pow % m)%m;
+            pow = pow*r%m;
         }
 
-        System.out.println(sum%m);
+        System.out.println(sum);
     }
 }
