@@ -4,7 +4,7 @@ import java.util.*;
 class Main {
     public static int s, e, q;
     public static int count = 0;
-    public static Map<String, Boolean> map = new HashMap<>();
+    public static Set<String> map = new HashSet<>();
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -37,7 +37,7 @@ class Main {
         int int_time = Integer.parseInt(s_t[0] + s_t[1]);
         
         if(int_time<=s){
-            map.put(name, true);
+            map.add(name);
             return;
         }
         
@@ -45,7 +45,7 @@ class Main {
             return;
         }
 
-        if(int_time<=q && map.containsKey(name)){
+        if(int_time<=q && map.contains(name)){
             map.remove(name);
             count++;
             return;
